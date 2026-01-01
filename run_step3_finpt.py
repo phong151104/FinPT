@@ -215,7 +215,7 @@ if __name__ == "__main__":
         hf_model_id = "openlm-research/open_llama_7b"
         tokenizer = LlamaTokenizer.from_pretrained(hf_model_id, cache_dir=cache_model)
         model = FinptLlamaForSequenceClassification.from_pretrained(
-            hf_model_id, cache_dir=cache_model, load_in_8bit=fp8)
+            hf_model_id, cache_dir=cache_model)
         freeze = True
     elif model_name == "llama-13b":
         model_class = "llama"
