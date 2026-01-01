@@ -382,7 +382,7 @@ if __name__ == "__main__":
     trainer = Trainer(
         model=model,
         args=training_args,
-        tokenizer=tokenizer,
+#        tokenizer=tokenizer,
         train_dataset=dataset_train,
         eval_dataset=dataset_val,
         data_collator=None,
