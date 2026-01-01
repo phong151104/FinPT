@@ -12,7 +12,16 @@ from torch.nn import BCEWithLogitsLoss, CrossEntropyLoss
 
 from transformers.models.t5.modeling_t5 import T5Stack
 from transformers.modeling_outputs import BaseModelOutput, SequenceClassifierOutputWithPast
-from transformers.utils.model_parallel_utils import assert_device_map, get_device_map
+try:
+    from transformers.utils.model_parallel_utils import assert_device_map, get_device_map
+except ImportError:
+    # Fallback cho transformers phiên bản mới (>= 4.30)
+    # Tạo các hàm giả (dummy functions) để code không bị crash
+    def assert_device_map(*args, **kwargs):
+        pass
+    
+    def get_device_map(*args, **kwargs):
+        return None
 from transformers import T5Config, T5PreTrainedModel
 
 
