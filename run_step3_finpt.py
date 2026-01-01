@@ -371,6 +371,7 @@ if __name__ == "__main__":
         eval_strategy="epoch",
         save_strategy="epoch",
         learning_rate=5e-5,
+        save_total_limit=2,
         per_device_train_batch_size=2,
         per_device_eval_batch_size=1,
         gradient_accumulation_steps=4,
@@ -381,8 +382,6 @@ if __name__ == "__main__":
         fp16=fp16,
         bf16=bf16,
         report_to="none",
-        # Nếu vẫn gặp vấn đề clip_grad_norm, có thể bật dòng này:
-        # max_grad_norm=0.0,
     )
 
     # CRITICAL: data_collator sẽ chuyển list -> torch tensors (tránh datasets torch formatter)
