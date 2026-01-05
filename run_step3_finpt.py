@@ -44,42 +44,42 @@ def get_finpt_data(cur_ds_name: str, fix_seq_len: int = None):
     assert os.path.exists(local_root), f"local_root not found: {local_root}"
 
     def read_profile_jsonl(fp):
-    texts = []
-    with open(fp, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
+        texts = []
+        with open(fp, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
 
-            # Thử parse JSON trước
-            try:
-                obj = json.loads(line)
-            except json.JSONDecodeError:
-                # Nếu không phải JSON -> coi là plain text
-                texts.append(line)
-                continue
+                # Thử parse JSON trước
+                try:
+                    obj = json.loads(line)
+                except json.JSONDecodeError:
+                    # Nếu không phải JSON -> coi là plain text
+                    texts.append(line)
+                    continue
 
-            # Nếu obj là dict: lấy theo key
-            if isinstance(obj, dict):
-                text = obj.get("X_profile") or obj.get("profile") or obj.get("text")
-                if text is None:
-                    raise ValueError(f"Missing text field in dict. keys={list(obj.keys())}")
-                texts.append(text)
+                # Nếu obj là dict: lấy theo key
+                if isinstance(obj, dict):
+                    text = obj.get("X_profile") or obj.get("profile") or obj.get("text")
+                    if text is None:
+                        raise ValueError(f"Missing text field in dict. keys={list(obj.keys())}")
+                    texts.append(text)
 
-            # Nếu obj là string: bản thân nó là text
-            elif isinstance(obj, str):
-                texts.append(obj)
+                # Nếu obj là string: bản thân nó là text
+                elif isinstance(obj, str):
+                    texts.append(obj)
 
-            # Nếu obj là list: join hoặc lấy phần tử đầu (tuỳ format)
-            elif isinstance(obj, list):
-                # trường hợp list[str]
-                if all(isinstance(x, str) for x in obj):
-                    texts.append(" ".join(obj))
+                # Nếu obj là list: join hoặc lấy phần tử đầu (tuỳ format)
+                elif isinstance(obj, list):
+                    # trường hợp list[str]
+                    if all(isinstance(x, str) for x in obj):
+                        texts.append(" ".join(obj))
+                    else:
+                        raise ValueError(f"Unsupported list content in jsonl: {type(obj[0])}")
+
                 else:
-                    raise ValueError(f"Unsupported list content in jsonl: {type(obj[0])}")
-
-            else:
-                raise ValueError(f"Unsupported jsonl line type: {type(obj)}")
+                    raise ValueError(f"Unsupported jsonl line type: {type(obj)}")
 
     return texts
 
