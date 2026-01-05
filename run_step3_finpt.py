@@ -9,6 +9,7 @@ import sys
 import logging
 import argparse
 import gc
+import json
 
 import numpy as np
 from sklearn.metrics import accuracy_score, f1_score
@@ -38,20 +39,43 @@ def get_finpt_data(cur_ds_name: str, fix_seq_len: int = None):
     global bsz
 
     # NOTE: trust_remote_code=True để tương thích tương lai
-    data = load_dataset(
-        "yuweiyin/FinBench",
-        cur_ds_name,
-        cache_dir=cache_ds,
-        trust_remote_code=True,
+    # ===== LOAD LOCAL DATA FROM KAGGLE INPUT =====
+    local_root = "/kaggle/input/class-rag-v2/class_rag_v2"
+    assert os.path.exists(local_root), f"local_root not found: {local_root}"
+
+    def read_profile_jsonl(fp):
+        texts = []
+        with open(fp, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                obj = json.loads(line)
+                text = obj.get("X_profile") or obj.get("profile") or obj.get("text")
+                assert text is not None, f"Missing text field in jsonl line: {obj.keys()}"
+                texts.append(text)
+        return texts
+
+    fin_text_train = read_profile_jsonl(
+        os.path.join(local_root, "profile_X_train.jsonl")
+    )
+    fin_text_validation = read_profile_jsonl(
+        os.path.join(local_root, "profile_X_val.jsonl")
+    )
+    fin_text_test = read_profile_jsonl(
+        os.path.join(local_root, "profile_X_test.jsonl")
     )
 
-    fin_text_train = data["train"]["X_profile"]
-    fin_text_validation = data["validation"]["X_profile"]
-    fin_text_test = data["test"]["X_profile"]
-
-    label_train = data["train"]["y"]
-    label_validation = data["validation"]["y"]
-    label_test = data["test"]["y"]
+    label_train = np.load(
+        os.path.join(local_root, "y_train.npy")
+    ).tolist()
+    label_validation = np.load(
+        os.path.join(local_root, "y_val.npy")
+    ).tolist()
+    label_test = np.load(
+        os.path.join(local_root, "y_test.npy")
+    ).tolist()
+    # ============================================
 
     logger.info(
         f">>> len(fin_text_train) = {len(fin_text_train)}; len(label_train) = {len(label_train)};\n"
