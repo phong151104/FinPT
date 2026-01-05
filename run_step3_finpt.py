@@ -80,8 +80,7 @@ def get_finpt_data(cur_ds_name: str, fix_seq_len: int = None):
 
                 else:
                     raise ValueError(f"Unsupported jsonl line type: {type(obj)}")
-
-    return texts
+        return texts
 
     fin_text_train = read_profile_jsonl(
         os.path.join(local_root, "profile_X_train.jsonl")
